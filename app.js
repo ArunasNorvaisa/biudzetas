@@ -21,22 +21,21 @@ const budgetController = (function(){
     };
     
     return {
-        addItem: function(type, dec, val) {
+        addItem: function(type, desc, val) {
             let newItem;
-            let ID;
-            //Creating new ID equal to the last element's ID+1;
+            let ID = 0;
+            //Creating new ID equal to the last element's ID + 1
+            //Or leaving ID=0 if it's the first element in the array
             if(data.allItems[type].length > 0) {
                 ID = data.allItems[type][data.allItems[type].length - 1].id + 1;
-            } else if(data.allItems[type][data.allItems[type].length] === 0) {
-                ID = 0;
             }
             //Deciding whether the new input is expense or income
             if(type === "exp") {
-                newItem = new Expense(ID, dec, val);
+                newItem = new Expense(ID, desc, val);
             } else if(type === "inc") {
-                newItem = new Income(ID, dec, val);
+                newItem = new Income(ID, desc, val);
             }
-            //Adding new item to the expe/inc list
+            //Adding new item to the exp/inc list
             data.allItems[type].push(newItem);
             return newItem;
         },
@@ -51,7 +50,9 @@ const UIController = (function() {
         inputType: '.add__type',
         inputDescription: '.add__description',
         inputValue: '.add__value',
-        inputBtn: '.add__btn'
+        inputBtn: '.add__btn',
+        incomeContainer: '.income__list',
+        expensesContainer: '.expenses__list'
     };
 
     return {
@@ -61,6 +62,39 @@ const UIController = (function() {
                 description: document.querySelector(DOMStrings.inputDescription).value,
                 value: document.querySelector(DOMStrings.inputValue).value
             };
+        },
+        addListItem: function(obj, type) {
+            //Creating HTML code with exp/inc values
+            let html, element;
+            const { id, description, value } = obj;
+            if(type === 'inc') {
+                element = DOMStrings.incomeContainer;
+                html = `<div class="item clearfix" id="income-${id}">
+                            <div class="item__description">${description}</div>
+                            <div class="right clearfix"><div class="item__value">${value}</div>
+                            <div class="item__delete">
+                                <button class="item__delete--btn">
+                                    <ion-icon name="close-circle-outline"></ion-icon>
+                                </button>
+                            </div>
+                        </div>`;
+            } else if(type === 'exp') {
+                element = DOMStrings.expensesContainer;
+                html = `<div class="item clearfix" id="expense-${id}">
+                            <div class="item__description">${description}</div>
+                            <div class="right clearfix">
+                                <div class="item__value">${value}</div>
+                                <div class="item__percentage">${value}</div>
+                                <div class="item__delete">
+                                    <button class="item__delete--btn">
+                                        <ion-icon name="close-circle-outline"></ion-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
+            }
+            //Inserting HTML code to the DOM
+            document.querySelector(element).insertAdjacentHTML('beforeend', html);
         },
         getDOMStrings: function() { return DOMStrings; }
     };
@@ -90,6 +124,7 @@ const controller = (function(budgetCtrl, UICtrl) {
         // 2. Add the item to the budget controller;
         newItem = budgetCtrl.addItem(type, description, value);
         // 3. Add the item to the UI;
+        UICtrl.addListItem(newItem, type);
         // 4. Calculate the budget;
         // 5. Display the budget in the UI.
     };

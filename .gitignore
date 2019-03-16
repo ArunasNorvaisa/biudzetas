@@ -10,8 +10,8 @@
 /build
 
 # misc
-style.css
-back.png
+/css/style.css
+/images/back.png
 package-lock.json
 .DS_Store
 .env
