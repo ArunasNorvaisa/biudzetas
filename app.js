@@ -75,11 +75,13 @@ const UIController = (function() {
                 element = DOMStrings.incomeContainer;
                 html = `<div class="item clearfix" id="income-${id}">
                             <div class="item__description">${description}</div>
-                            <div class="right clearfix"><div class="item__value">${value}</div>
-                            <div class="item__delete">
-                                <button class="item__delete--btn">
-                                    <ion-icon name="close-circle-outline"></ion-icon>
-                                </button>
+                            <div class="right clearfix">
+                                <div class="item__value">${value}</div>
+                                <div class="item__delete">
+                                    <button class="item__delete--btn">
+                                        <ion-icon name="close-circle-outline"></ion-icon>
+                                    </button>
+                                </div>
                             </div>
                         </div>`;
             } else if(type === 'exp') {
