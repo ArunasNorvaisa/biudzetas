@@ -150,7 +150,7 @@ const UIController = (function() {
         },
         displayBudget: function(obj) {
             document.querySelector(DOMStrings.budgetLabel).textContent = obj.budget;
-            document.querySelector(DOMStrings.incomeLabel).textContent = obj.totalsInc;
+            document.querySelector(DOMStrings.incomeLabel).textContent = obj.totalInc;
             document.querySelector(DOMStrings.expensesLabel).textContent = obj.totalExp;
             
             if(obj.percentage > 0) {
@@ -205,8 +205,11 @@ const controller = (function(budgetCtrl, UICtrl) {
     };
 
     return {
+        //App initialization
         init: function() {
+            //Adding event listeners
             setupEventListeners();
+            //setting everything to 0;
             UICtrl.displayBudget({
                 budget: 0,
                 totalInc: 0,
