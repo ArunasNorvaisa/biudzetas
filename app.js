@@ -147,8 +147,8 @@ const UIController = (function() {
     const formatNumber = function(num, type) {
         //The purpose is to format numbers nicely: 2345.6789 -> +2,345.68
         num = Math.abs(num);
-        num = num.toFixed(2);
         num = Number(num).toLocaleString('en');
+        num = Number(num).toFixed(2);
         return (type === 'exp' ? '-' : '+') + ' ' + num;
     };
 
