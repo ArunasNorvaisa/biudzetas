@@ -129,6 +129,19 @@ const UIController = (function() {
         container: '.container'
     };
 
+    const formatNumber = function(num, type) {
+        //The purpose is to nicely format numbers: 2345.6789 -> +2,345.68
+        num = Math.abs(num);
+        num = num.toFixed(2);
+        const numSplit = num.split('.');
+        const dec = numSplit[1];
+        let int = numSplit[0];
+        if(int.length > 3) {
+            int = int.substr(0, int.length - 1) + ',' + int.substr(int.length - 3, 3); // 12345 -> 12,345
+        }
+        return (type === 'exp' ? '-' : '+') + ' ' + int + '.' + dec;
+    };
+
     return {
         getInput: function() {
             return {
@@ -146,7 +159,7 @@ const UIController = (function() {
                 html = `<div class="item clearfix" id="inc-${id}">
                             <div class="item__description">${description}</div>
                             <div class="right clearfix">
-                                <div class="item__value">${value}</div>
+                                <div class="item__value">${formatNumber(value, type)}</div>
                                 <div class="item__delete">
                                     <button class="item__delete--btn">
                                         <ion-icon name="close-circle-outline"></ion-icon>
@@ -159,7 +172,7 @@ const UIController = (function() {
                 html = `<div class="item clearfix" id="exp-${id}">
                             <div class="item__description">${description}</div>
                             <div class="right clearfix">
-                                <div class="item__value">${value}</div>
+                                <div class="item__value">${formatNumber(value, type)}</div>
                                 <div class="item__percentage">${value}</div>
                                 <div class="item__delete">
                                     <button class="item__delete--btn">
@@ -189,9 +202,11 @@ const UIController = (function() {
             fieldsArray[0].focus();
         },
         displayBudget: function(obj) {
-            document.querySelector(DOMStrings.budgetLabel).textContent = obj.budget;
-            document.querySelector(DOMStrings.incomeLabel).textContent = obj.totalInc;
-            document.querySelector(DOMStrings.expensesLabel).textContent = obj.totalExp;
+            let type;
+            obj.budget >= 0 ? type = 'inc' : type = 'exp';
+            document.querySelector(DOMStrings.budgetLabel).textContent = formatNumber(obj.budget, type);
+            document.querySelector(DOMStrings.incomeLabel).textContent = formatNumber(obj.totalInc, 'inc');
+            document.querySelector(DOMStrings.expensesLabel).textContent = formatNumber(obj.totalExp, 'exp');
 
             if(obj.percentage > 0) {
                 document.querySelector(DOMStrings.percentageLabel).textContent = obj.percentage + '%';
@@ -214,6 +229,7 @@ const UIController = (function() {
                 }
             });
         },
+
         getDOMStrings: function() { return DOMStrings; }
     };
 })();
