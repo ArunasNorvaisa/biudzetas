@@ -11,7 +11,7 @@
 
 # misc
 /css/style.css
-/images/back.png
+/images/
 package-lock.json
 .DS_Store
 .env

@@ -73,14 +73,16 @@ const budgetController = (function(){
 
         deleteItem: function(type, id) {
             //Creating an array with all IDs
-            const ids = data.allItems[type].map(function(el) {
-                return el.id;
-            });
-            // Getting the index of the item to delete
-            const index = ids.indexOf(id);
-            // Deleting the item (if index is found)
-            if(index !== -1) {
-                data.allItems[type].splice(index, 1);
+            if(Array.isArray(data.allItems[type])) {
+                const ids = data.allItems[type].map(function(el) {
+                    return el.id;
+                });
+                // Getting the index of the item to delete
+                const index = ids.indexOf(id);
+                // Deleting the item (if index is found)
+                if(index !== -1) {
+                    data.allItems[type].splice(index, 1);
+                }
             }
         },
 
@@ -198,7 +200,9 @@ const UIController = (function() {
 
         deleteListItem: function(selectorID) {
             const el = document.getElementById(selectorID);
-            el.parentNode.removeChild(el);
+            if(el) {
+                el.parentNode.removeChild(el);
+            }
         },
 
         clearFields: function() {
