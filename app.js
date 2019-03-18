@@ -52,6 +52,18 @@ const budgetController = (function(){
             data.allItems[type].push(newItem);
             return newItem;
         },
+        deleteItem: function(type, id) {
+            //Creating an array with all IDs
+            const ids = data.allItems[type].map(function(el) {
+                return el.id;
+            });
+            // Getting the index of the item to delete
+            const index = ids.indexOf(id);
+            // Deleting the item (if index is found)
+            if(index !== -1) {
+                data.allItems[type].splice(index, 1);
+            }
+        },
         calculateBudget: function() {
             //Calculate total income and expenses
             calculateTotal('inc');
@@ -90,7 +102,8 @@ const UIController = (function() {
         budgetLabel: '.budget__value',
         incomeLabel: '.budget__income--value',
         expensesLabel: '.budget__expenses--value',
-        percentageLabel: '.budget__expenses--percentage'
+        percentageLabel: '.budget__expenses--percentage',
+        container: '.container'
     };
 
     return {
@@ -107,7 +120,7 @@ const UIController = (function() {
             const { id, description, value } = obj;
             if(type === 'inc') {
                 element = DOMStrings.incomeContainer;
-                html = `<div class="item clearfix" id="income-${id}">
+                html = `<div class="item clearfix" id="inc-${id}">
                             <div class="item__description">${description}</div>
                             <div class="right clearfix">
                                 <div class="item__value">${value}</div>
@@ -120,7 +133,7 @@ const UIController = (function() {
                         </div>`;
             } else if(type === 'exp') {
                 element = DOMStrings.expensesContainer;
-                html = `<div class="item clearfix" id="expense-${id}">
+                html = `<div class="item clearfix" id="exp-${id}">
                             <div class="item__description">${description}</div>
                             <div class="right clearfix">
                                 <div class="item__value">${value}</div>
@@ -135,6 +148,10 @@ const UIController = (function() {
             }
             //Inserting HTML code to the DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', html);
+        },
+        deleteListItem: function(selectorID) {
+            const el = document.getElementById(selectorID);
+            el.parentNode.removeChild(el);
         },
         clearFields: function() {
             //Selecting fields to clear
@@ -175,6 +192,7 @@ const controller = (function(budgetCtrl, UICtrl) {
                 ctrlAddItem();
             }
         });
+        document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
 
     };
     
@@ -202,6 +220,23 @@ const controller = (function(budgetCtrl, UICtrl) {
             updateBudget();
         }
 
+    };
+    
+    const ctrlDeleteItem = function(event) {
+        let splitID, type, ID;
+        //Traversing the DOM in search of the DIV to delete, not very elegantly :(
+        const itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+        if(itemID) {
+            splitID = itemID.split("-"); // => array in a format ['inc', '1']
+            type = splitID[0]; // => 'exp' or 'inc'
+            ID = parseInt(splitID[1]);
+        }
+        // Delete the item from the data structure
+        budgetCtrl.deleteItem(type, ID);
+        // Delete the item from the UI
+        UICtrl.deleteListItem(itemID);
+        // Update and show new budget
+        updateBudget();
     };
 
     return {
