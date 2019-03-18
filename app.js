@@ -1,5 +1,5 @@
 const budgetController = (function(){
-    
+
     class Expense {
         constructor(id, description, value) {
             this.id = id;
@@ -183,7 +183,7 @@ const UIController = (function() {
                             <div class="item__description">${description}</div>
                             <div class="right clearfix">
                                 <div class="item__value">${formatNumber(value, type)}</div>
-                                <div class="item__percentage">${value}</div>
+                                <div class="item__percentage"></div>
                                 <div class="item__delete">
                                     <button class="item__delete--btn">
                                         <ion-icon name="close-circle-outline"></ion-icon>
