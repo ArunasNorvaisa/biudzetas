@@ -1,4 +1,5 @@
 const budgetController = (function(){
+    
     class Expense {
         constructor(id, description, value) {
             this.id = id;
@@ -7,6 +8,7 @@ const budgetController = (function(){
             this.percentage = -1;
         }
     };
+
     Expense.prototype.calcPercentage = function(totalIncome) {
         if(totalIncome > 0) {
             this.percentage = Math.round(this.value * 100 / totalIncome);
@@ -14,9 +16,11 @@ const budgetController = (function(){
             this.percentage = -1;
         }
     };
+
     Expense.prototype.getPercentage = function() {
         return this.percentage;
     };
+
     class Income {
         constructor(id, description, value) {
             this.id = id;
@@ -24,6 +28,7 @@ const budgetController = (function(){
             this.value = value;
         }
     };
+
     const calculateTotal = function(type) {
         let sum = 0;
         data.allItems[type].forEach(function(el) {
@@ -31,6 +36,7 @@ const budgetController = (function(){
         });
         data.totals[type] = sum;
     };
+
     let data = {
         allItems: {
             exp: [],
@@ -45,6 +51,7 @@ const budgetController = (function(){
     };
 
     return {
+
         addItem: function(type, desc, val) {
             let newItem;
             let ID = 0;
@@ -63,6 +70,7 @@ const budgetController = (function(){
             data.allItems[type].push(newItem);
             return newItem;
         },
+
         deleteItem: function(type, id) {
             //Creating an array with all IDs
             const ids = data.allItems[type].map(function(el) {
@@ -75,6 +83,7 @@ const budgetController = (function(){
                 data.allItems[type].splice(index, 1);
             }
         },
+
         calculateBudget: function() {
             //Calculate total income and expenses
             calculateTotal('inc');
@@ -88,17 +97,20 @@ const budgetController = (function(){
                 data.percentage = -1;
             }
         },
+
         calculatePercentages: function() {
             data.allItems.exp.forEach(function(el) {
                 el.calcPercentage(data.totals.inc);
             });
         },
+
         getPercentages: function () {
             const allPerc = data.allItems.exp.map(function(el) {
                 return el.getPercentage();
             });
             return allPerc;
         },
+
         getBudget: function() {
             return {
                 budget: data.budget,
@@ -107,6 +119,7 @@ const budgetController = (function(){
                 percentage: data.percentage
             };
         },
+
         testing: function() {
             console.log(data);
         }
@@ -130,19 +143,15 @@ const UIController = (function() {
     };
 
     const formatNumber = function(num, type) {
-        //The purpose is to nicely format numbers: 2345.6789 -> +2,345.68
+        //The purpose is to format numbers nicely: 2345.6789 -> +2,345.68
         num = Math.abs(num);
         num = num.toFixed(2);
-        const numSplit = num.split('.');
-        const dec = numSplit[1];
-        let int = numSplit[0];
-        if(int.length > 3) {
-            int = int.substr(0, int.length - 1) + ',' + int.substr(int.length - 3, 3); // 12345 -> 12,345
-        }
-        return (type === 'exp' ? '-' : '+') + ' ' + int + '.' + dec;
+        num = Number(num).toLocaleString('en');
+        return (type === 'exp' ? '-' : '+') + ' ' + num;
     };
 
     return {
+
         getInput: function() {
             return {
                 type: document.querySelector(DOMStrings.inputType).value, //Either inc or exp (see html)
@@ -150,6 +159,7 @@ const UIController = (function() {
                 value: parseFloat(document.querySelector(DOMStrings.inputValue).value)
             };
         },
+
         addListItem: function(obj, type) {
             //Creating HTML code with exp/inc values
             let html, element;
@@ -185,10 +195,12 @@ const UIController = (function() {
             //Inserting HTML code to the DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', html);
         },
+
         deleteListItem: function(selectorID) {
             const el = document.getElementById(selectorID);
             el.parentNode.removeChild(el);
         },
+
         clearFields: function() {
             //Selecting fields to clear
             const fields = document.querySelectorAll(DOMStrings.inputDescription + ' ,' + DOMStrings.inputValue);
@@ -201,6 +213,7 @@ const UIController = (function() {
             //Returning focus to the description
             fieldsArray[0].focus();
         },
+
         displayBudget: function(obj) {
             let type;
             obj.budget >= 0 ? type = 'inc' : type = 'exp';
@@ -214,6 +227,7 @@ const UIController = (function() {
                 document.querySelector(DOMStrings.percentageLabel).textContent = '----';
             }
         },
+
         displayPercentages: function(array) {
             const fields = document.querySelectorAll(DOMStrings.expensesPercentageLabel);
             const nodeListForEach = function(list, callback) {
