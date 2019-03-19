@@ -148,9 +148,17 @@ const UIController = (function() {
     const formatNumber = function(num, type) {
         //The purpose is to format numbers nicely: 2345.6789 -> +2,345.68
         num = Math.abs(num);
-        num = Number(num).toLocaleString('en');
-        num = Number(num).toFixed(2);
+        num = num.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
         return (type === 'exp' ? '-' : '+') + ' ' + num;
+    };
+    
+    const nodeListForEach = function(list, callback) {
+        for(let i = 0; i < list.length; i++) {
+            callback(list[i], i);
+        }
     };
 
     return {
@@ -172,7 +180,7 @@ const UIController = (function() {
                 html = `<div class="item clearfix" id="inc-${id}">
                             <div class="item__description">${description}</div>
                             <div class="right clearfix">
-                                <div class="item__value">${formatNumber(value, type)}</div>
+                                <div class="item__value">${formatNumber(value, 'inc')}</div>
                                 <div class="item__delete">
                                     <button class="item__delete--btn">
                                         <ion-icon name="close-circle-outline"></ion-icon>
@@ -185,7 +193,7 @@ const UIController = (function() {
                 html = `<div class="item clearfix" id="exp-${id}">
                             <div class="item__description">${description}</div>
                             <div class="right clearfix">
-                                <div class="item__value">${formatNumber(value, type)}</div>
+                                <div class="item__value">${formatNumber(value, 'exp')}</div>
                                 <div class="item__percentage"></div>
                                 <div class="item__delete">
                                     <button class="item__delete--btn">
@@ -235,11 +243,6 @@ const UIController = (function() {
 
         displayPercentages: function(array) {
             const fields = document.querySelectorAll(DOMStrings.expensesPercentageLabel);
-            const nodeListForEach = function(list, callback) {
-                for(let i = 0; i < list.length; i++) {
-                    callback(list[i], i);
-                }
-            };
             nodeListForEach(fields, function(field, index) {
                 if(array[index] > 0) {
                     field.textContent = array[index] + "%";
@@ -254,6 +257,18 @@ const UIController = (function() {
             const year = now.getFullYear();
             const month = now.toLocaleString('en-us', { month: 'long' });
             document.querySelector(DOMStrings.dateLabel).textContent = month + ' ' + year;
+        },
+        
+        changedType: function() {
+            const fields = document.querySelectorAll(
+                DOMStrings.inputType + ',' +
+                DOMStrings.inputValue + ',' +
+                DOMStrings.inputDescription
+            );
+            nodeListForEach(fields, function(field) {
+                field.classList.toggle('red-focus');
+            });
+            document.querySelector(DOMStrings.inputBtn).classList.toggle('red');
         },
 
         getDOMStrings: function() { return DOMStrings; }
@@ -273,6 +288,8 @@ const controller = (function(budgetCtrl, UICtrl) {
             }
         });
         document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+        //Event listener for changes in inc/exp type
+        document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changedType);
 
     };
 
