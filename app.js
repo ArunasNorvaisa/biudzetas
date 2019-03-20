@@ -154,12 +154,6 @@ const UIController = (function() {
         });
         return (type === 'exp' ? '-' : '+') + ' ' + num;
     };
-    
-    const nodeListForEach = function(list, callback) {
-        for(let i = 0; i < list.length; i++) {
-            callback(list[i], i);
-        }
-    };
 
     return {
 
@@ -215,16 +209,14 @@ const UIController = (function() {
         },
 
         clearFields: function() {
-            //Selecting fields to clear
+            //Selecting fields to clear (javascript LIST is returned)
             const fields = document.querySelectorAll(DOMStrings.inputDescription + ' ,' + DOMStrings.inputValue);
-            //Coverting returned LIST to ARRAY
-            const fieldsArray = Array.prototype.slice.call(fields);
             //Clearing the fields
-            for(field of fieldsArray) {
+            for(field of fields) {
                 field.value = '';
             }
-            //Returning focus to the description
-            fieldsArray[0].focus();
+            //Returning focus to the value
+            fields[0].focus();
         },
 
         displayBudget: function(obj) {
@@ -243,31 +235,46 @@ const UIController = (function() {
 
         displayPercentages: function(array) {
             const fields = document.querySelectorAll(DOMStrings.expensesPercentageLabel);
-            nodeListForEach(fields, function(field, index) {
+/*             const nodeListForEach = function(list, callback) {
+                for(let i = 0; i < list.length; i++) {
+                    callback(list[i], i);
+                }
+            }; */
+            let index = 0;
+            for(field of fields) {
+                if(array[index] > 0) {
+                    field.textContent = array[index] + "%";
+                    index++;
+                } else {
+                    field.textContent = "----";
+                    index++;
+                }
+            }
+/*             nodeListForEach(fields, function(field, index) {
                 if(array[index] > 0) {
                     field.textContent = array[index] + "%";
                 } else {
                     field.textContent = "----";
                 }
-            });
+            }); */
         },
-        
+
         displayMonth: function() {
             const now = new Date();
             const year = now.getFullYear();
             const month = now.toLocaleString('en-us', { month: 'long' });
             document.querySelector(DOMStrings.dateLabel).textContent = month + ' ' + year;
         },
-        
+
         changedType: function() {
             const fields = document.querySelectorAll(
                 DOMStrings.inputType + ',' +
                 DOMStrings.inputValue + ',' +
                 DOMStrings.inputDescription
             );
-            nodeListForEach(fields, function(field) {
+            for(field of fields) {
                 field.classList.toggle('red-focus');
-            });
+            }
             document.querySelector(DOMStrings.inputBtn).classList.toggle('red');
         },
 
