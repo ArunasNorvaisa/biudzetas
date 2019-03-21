@@ -10,7 +10,7 @@
 /build
 
 # misc
-/css/style.css
+
 /images/
 package-lock.json
 .DS_Store
